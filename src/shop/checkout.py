@@ -77,6 +77,9 @@ def validate_order(
         if item["sku"] in seen_skus:
             return f"Line {position} repeats sku {item['sku']}."
         seen_skus.add(item["sku"])
+    # Spec 3 rule 9: an unknown promo code is a promise of a discount we cannot honour.
+    if promo_code and promo_code not in PROMO_CODES:
+        return f"Unknown promo code {promo_code}."
     return None
 
 
