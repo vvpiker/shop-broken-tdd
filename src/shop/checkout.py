@@ -95,9 +95,17 @@ def calculate_order_total(
     # Spec 4: a rejected order has no total, only None.
     if validate_order(lines, promo_code, shipping_city) is not None:
         return None
-    # The smoke test prices one plain line, so only steps 1 and 9-10 exist yet:
-    # tier, promo and delivery arrive with their own red tests.
+    # The smoke test prices one plain line, so only steps 1 and 9-10 existed
+    # until the tier test arrived; promo and delivery come with their own tests.
     subtotal = sum(int(item["qty"]) * int(item["unit_price_kopecks"]) for item in lines)
-    base = subtotal
+    units = sum(int(item["qty"]) for item in lines)
+    # Spec 4 step 2: the biggest threshold that fits wins. TIER_DISCOUNTS is
+    # ordered ascending, so the last match is the largest matching tier.
+    discount_percent = 0
+    for threshold, percent in TIER_DISCOUNTS:
+        if units >= threshold:
+            discount_percent = percent
+    # Spec 4 steps 5-6: one whole-percent discount, no floats anywhere.
+    base = subtotal - percent_of(subtotal, discount_percent)
     vat = percent_of(base, VAT_PERCENT)
     return base + vat
