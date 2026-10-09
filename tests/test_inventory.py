@@ -22,14 +22,14 @@ def test_available_units_returns_zero_for_unknown_sku() -> None:
 
 def test_reserve_units_moves_units_out_of_stock() -> None:
     stock = {"SKU-1": 10}
-    ledger = reserve_units(stock, {"sku": "SKU-1", "qty": "4"})
+    ledger = reserve_units(stock, {"sku": "SKU-1", "qty": "4"}, None)
     assert stock == {"SKU-1": 6}
     assert ledger == {"SKU-1": 4}
 
 
 def test_reserve_units_starts_from_an_empty_ledger() -> None:
-    reserve_units({"SKU-1": 10}, {"sku": "SKU-1", "qty": "4"})
-    ledger = reserve_units({"SKU-1": 10}, {"sku": "SKU-1", "qty": "4"})
+    reserve_units({"SKU-1": 10}, {"sku": "SKU-1", "qty": "4"}, None)
+    ledger = reserve_units({"SKU-1": 10}, {"sku": "SKU-1", "qty": "4"}, None)
     assert ledger == {"SKU-1": 4}
 
 
