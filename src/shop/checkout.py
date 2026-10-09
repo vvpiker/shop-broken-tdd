@@ -112,6 +112,13 @@ def calculate_order_total(
     # Spec 4 step 5: no percent may exceed the cap, whatever its source.
     discount_percent = min(discount_percent, MAX_DISCOUNT_PERCENT)
     # Steps 5-6: one whole-percent discount, no floats anywhere.
-    base = subtotal - percent_of(subtotal, discount_percent)
+    discounted_subtotal = subtotal - percent_of(subtotal, discount_percent)
+    # Spec 4 step 7: delivery is a flat fee for a city order that stays below
+    # the free threshold - and the threshold is judged after the discount.
+    delivery = (
+        SHIPPING_KOPEKS if shipping_city and discounted_subtotal < FREE_DELIVERY_FROM_KOPEKS else 0
+    )
+    # Steps 8-10: VAT applies to the base, delivery included.
+    base = discounted_subtotal + delivery
     vat = percent_of(base, VAT_PERCENT)
     return base + vat

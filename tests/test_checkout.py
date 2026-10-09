@@ -214,7 +214,6 @@ def test_discount_is_capped_at_thirty_percent() -> None:
 
 def test_delivery_is_charged_for_small_order() -> None:
     """Spec 4, steps 7-10: a city adds SHIPPING_KOPEKS and VAT is charged on it."""
-    ...
     source = ([{"sku": "5", "qty": "50", "unit_price_kopecks": "1990"}], "WELCOME10", "msk")
     subtotal = int(source[0][0]["qty"]) * int(source[0][0]["unit_price_kopecks"])
     tier_dis = 15
@@ -231,7 +230,18 @@ def test_delivery_is_charged_for_small_order() -> None:
 
 def test_free_delivery_uses_discounted_subtotal() -> None:
     """Spec 4, step 7: the threshold is checked against the sum after the discount."""
-    ...
+    source = ([{"sku": "6", "qty": "5", "unit_price_kopecks": "100000"}], "", "msk")
+    subtotal = int(source[0][0]["qty"]) * int(source[0][0]["unit_price_kopecks"])
+    tier_dis = 0
+    promo = 0
+    discount_percent = min(max(tier_dis, promo), 30)
+    discount = percent_of(subtotal, discount_percent)
+    discounted_subtotal = subtotal - discount
+    shipping = 49_000 if source[2] and discounted_subtotal < 500_000 else 0
+    base = discounted_subtotal + shipping
+    vat = percent_of(base, 20)
+    total = base + vat
+    assert (calculate_order_total(*source)) == total
 
 
 def test_vat_is_charged_on_the_discounted_sum() -> None:
