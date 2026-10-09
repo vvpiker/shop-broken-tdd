@@ -246,4 +246,15 @@ def test_free_delivery_uses_discounted_subtotal() -> None:
 
 def test_vat_is_charged_on_the_discounted_sum() -> None:
     """Spec 4, steps 8-10: base = discounted subtotal + delivery."""
-    ...
+    source = ([{"sku": "5", "qty": "50", "unit_price_kopecks": "1990"}], "WELCOME10", "msk")
+    subtotal = int(source[0][0]["qty"]) * int(source[0][0]["unit_price_kopecks"])
+    tier_dis = 15
+    promo = 10
+    discount_percent = min(max(tier_dis, promo), 30)
+    discount = percent_of(subtotal, discount_percent)
+    discounted_subtotal = subtotal - discount
+    shipping = 49_000 if source[2] and discounted_subtotal < 500_000 else 0
+    base = discounted_subtotal + shipping
+    vat = percent_of(base, 20)
+    total = base + vat
+    assert (calculate_order_total(*source)) == total
