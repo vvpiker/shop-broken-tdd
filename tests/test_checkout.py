@@ -52,7 +52,10 @@ def test_missing_line_key_is_rejected() -> None:
 
 def test_non_numeric_quantity_is_rejected() -> None:
     """Spec 3, rule 4: `qty` must be a whole number."""
-    ...
+    assert validate_order(
+        list({"sku": "1", "qty": "abracadabra", "unit_price_kopecks": "10000"}),
+        promo_code="WELCOME10", shipping_city="spb"
+        ) is not None
 
 
 def test_zero_quantity_is_rejected() -> None:
