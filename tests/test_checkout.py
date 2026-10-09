@@ -181,7 +181,20 @@ def test_tier_discount_at_highest_threshold() -> None:
 
 def test_promo_code_beats_tier_discount() -> None:
     """Spec 4, steps 3-4: the bigger percentage wins, the two do not add up."""
-    ...
+    source = ([{"sku": "3", "qty": "25", "unit_price_kopecks": "10000"}], "15", "spb")
+    subtotal = 25 * 10000
+    tier_dis = 10
+    promo = 15
+    discount_percent = min(max(tier_dis, promo), 30)
+    discount = percent_of(subtotal, discount_percent)
+    discounted_subtotal = subtotal - discount
+    shipping = 49_000 if source[2] and discounted_subtotal < 500_000 else 0
+    base = discounted_subtotal + shipping
+    vat = percent_of(base, 20)
+    total = base + vat
+    assert (
+        calculate_order_total(*source)
+    ) == total
 
 
 def test_discount_is_capped_at_thirty_percent() -> None:
