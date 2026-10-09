@@ -101,7 +101,10 @@ def test_unknown_promo_code_is_rejected() -> None:
 
 def test_unsupported_city_is_rejected() -> None:
     """Spec 3, rule 10: only cities from SUPPORTED_CITIES are served."""
-    ...
+    assert validate_order(
+        list({"sku": "1", "qty": "10", "unit_price_kopecks": "10000"}),
+        promo_code="WELCOME10", shipping_city="nnov"
+        ) is not None
 
 
 def test_valid_order_passes_validation() -> None:
