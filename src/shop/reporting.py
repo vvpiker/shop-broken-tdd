@@ -1,14 +1,14 @@
+from datetime import UTC, datetime
 from shop.inventory import low_stock_items
 from shop.money import format_kopecks
-from datetime import datetime
 
 REPORT_HEADER = f'Stock report'
 DEFAULT_LOW_STOCK_THRESHOLD = 10
 
 
 def build_stock_report(stock: dict[str, int], prices: dict[str, int], threshold: int = DEFAULT_LOW_STOCK_THRESHOLD) -> str:
-    generated_at = datetime.utcnow().isoformat()
-    total_value: str = ""
+    generated_at = datetime.now(UTC).isoformat()
+    total_value = 0
     lines = [REPORT_HEADER, f"generated_at={generated_at}"]
     for sku, count in sorted(stock.items()):
         unit_price = prices.get(sku, 0)
