@@ -80,6 +80,9 @@ def validate_order(
     # Spec 3 rule 9: an unknown promo code is a promise of a discount we cannot honour.
     if promo_code and promo_code not in PROMO_CODES:
         return f"Unknown promo code {promo_code}."
+    # Spec 3 rule 10: we only deliver where we have partners; an empty city is pickup.
+    if shipping_city and shipping_city not in SUPPORTED_CITIES:
+        return f"Unsupported shipping city {shipping_city}."
     return None
 
 
