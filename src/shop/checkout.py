@@ -109,7 +109,9 @@ def calculate_order_total(
     # of the two wins - discounts never stack.
     promo_percent = PROMO_CODES.get(promo_code, 0)
     discount_percent = max(tier_percent, promo_percent)
-    # Spec 4 steps 5-6: one whole-percent discount, no floats anywhere.
+    # Spec 4 step 5: no percent may exceed the cap, whatever its source.
+    discount_percent = min(discount_percent, MAX_DISCOUNT_PERCENT)
+    # Steps 5-6: one whole-percent discount, no floats anywhere.
     base = subtotal - percent_of(subtotal, discount_percent)
     vat = percent_of(base, VAT_PERCENT)
     return base + vat
