@@ -14,6 +14,7 @@ Run one test at a time while you work:
 """
 
 from shop.checkout import calculate_order_total, validate_order
+from shop.money import percent_of
 
 
 def line(sku: str = "SKU-1", qty: str = "1", unit_price_kopecks: str = "10000") -> dict[str, str]:
@@ -174,8 +175,9 @@ def test_tier_discount_at_first_threshold() -> None:
 
 def test_tier_discount_at_highest_threshold() -> None:
     """Spec 4, steps 2-5: 50 units give 15%, not 5% + 10%."""
-    ...
-
+    assert (
+        calculate_order_total([{"sku": "3", "qty": "50", "unit_price_kopecks": "10000"}], "", "")
+    ) == 510_000
 
 def test_promo_code_beats_tier_discount() -> None:
     """Spec 4, steps 3-4: the bigger percentage wins, the two do not add up."""
