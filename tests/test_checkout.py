@@ -44,7 +44,7 @@ def test_missing_line_key_is_rejected() -> None:
     """Spec 3, rule 3: every required key must be present."""
     assert validate_order(
         [{"sku": "1", "qty": "1", "unit_price_kopecks": "10000"},
-             {"sku": "2", "unit_price_kopecks": "10000"} ],
+         {"sku": "2", "unit_price_kopecks": "10000"} ],
         promo_code="WELCOME10", shipping_city="spb"
         ) is not None
 
@@ -68,7 +68,10 @@ def test_zero_quantity_is_rejected() -> None:
 
 def test_non_numeric_price_is_rejected() -> None:
     """Spec 3, rule 6: `unit_price_kopecks` must be a whole number."""
-    ...
+    assert validate_order(
+        list({"sku": "1", "qty": "abracadabra2", "unit_price_kopecks": "10000"}),
+        promo_code="WELCOME10", shipping_city="spb"
+        ) is not None
 
 
 def test_negative_price_is_rejected() -> None:
