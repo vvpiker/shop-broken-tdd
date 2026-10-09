@@ -101,10 +101,14 @@ def calculate_order_total(
     units = sum(int(item["qty"]) for item in lines)
     # Spec 4 step 2: the biggest threshold that fits wins. TIER_DISCOUNTS is
     # ordered ascending, so the last match is the largest matching tier.
-    discount_percent = 0
+    tier_percent = 0
     for threshold, percent in TIER_DISCOUNTS:
         if units >= threshold:
-            discount_percent = percent
+            tier_percent = percent
+    # Spec 4 steps 3-4: the promo code brings its own percent, and the bigger
+    # of the two wins - discounts never stack.
+    promo_percent = PROMO_CODES.get(promo_code, 0)
+    discount_percent = max(tier_percent, promo_percent)
     # Spec 4 steps 5-6: one whole-percent discount, no floats anywhere.
     base = subtotal - percent_of(subtotal, discount_percent)
     vat = percent_of(base, VAT_PERCENT)
