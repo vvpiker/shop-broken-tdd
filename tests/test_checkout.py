@@ -29,90 +29,133 @@ def test_smoke_single_line_without_delivery() -> None:
 
 def test_empty_order_is_rejected() -> None:
     """Spec 3, rule 1: an order without lines cannot be processed."""
-    assert validate_order(lines=list(), promo_code="WELCOME10", shipping_city="spb") is not None
+    assert validate_order(lines=[], promo_code="WELCOME10", shipping_city="spb") is not None
 
 
 def test_empty_sku_is_rejected() -> None:
     """Spec 3, rule 2: a blank article code is not allowed."""
-    assert validate_order(
-        list({"sku": "", "qty": "1", "unit_price_kopecks": "10000"}),
-        promo_code="WELCOME10", shipping_city="spb"
-        ) is not None
+    assert (
+        validate_order(
+            [{"sku": "", "qty": "1", "unit_price_kopecks": "10000"}],
+            promo_code="WELCOME10",
+            shipping_city="spb",
+        )
+        is not None
+    )
 
 
 def test_missing_line_key_is_rejected() -> None:
     """Spec 3, rule 3: every required key must be present."""
-    assert validate_order(
-        [{"sku": "1", "qty": "1", "unit_price_kopecks": "10000"},
-         {"sku": "2", "unit_price_kopecks": "10000"} ],
-        promo_code="WELCOME10", shipping_city="spb"
-        ) is not None
-
+    assert (
+        validate_order(
+            [
+                {"sku": "1", "qty": "1", "unit_price_kopecks": "10000"},
+                {"sku": "2", "unit_price_kopecks": "10000"},
+            ],
+            promo_code="WELCOME10",
+            shipping_city="spb",
+        )
+        is not None
+    )
 
 
 def test_non_numeric_quantity_is_rejected() -> None:
     """Spec 3, rule 4: `qty` must be a whole number."""
-    assert validate_order(
-        list({"sku": "1", "qty": "abracadabra", "unit_price_kopecks": "10000"}),
-        promo_code="WELCOME10", shipping_city="spb"
-        ) is not None
+    assert (
+        validate_order(
+            [{"sku": "1", "qty": "abracadabra", "unit_price_kopecks": "10000"}],
+            promo_code="WELCOME10",
+            shipping_city="spb",
+        )
+        is not None
+    )
 
 
 def test_zero_quantity_is_rejected() -> None:
     """Spec 3, rule 5: `qty` must be greater than zero."""
-    assert validate_order(
-        list({"sku": "1", "qty": "-10", "unit_price_kopecks": "10000"}),
-        promo_code="WELCOME10", shipping_city="spb"
-        ) is not None
+    assert (
+        validate_order(
+            [{"sku": "1", "qty": "-10", "unit_price_kopecks": "10000"}],
+            promo_code="WELCOME10",
+            shipping_city="spb",
+        )
+        is not None
+    )
 
 
 def test_non_numeric_price_is_rejected() -> None:
     """Spec 3, rule 6: `unit_price_kopecks` must be a whole number."""
-    assert validate_order(
-        list({"sku": "1", "qty": "10", "unit_price_kopecks": "abracadabra2"}),
-        promo_code="WELCOME10", shipping_city="spb"
-        ) is not None
+    assert (
+        validate_order(
+            [{"sku": "1", "qty": "10", "unit_price_kopecks": "abracadabra2"}],
+            promo_code="WELCOME10",
+            shipping_city="spb",
+        )
+        is not None
+    )
 
 
 def test_negative_price_is_rejected() -> None:
     """Spec 3, rule 7: a price may not be negative."""
-    assert validate_order(
-        list({"sku": "1", "qty": "100", "unit_price_kopecks": "-10000"}),
-        promo_code="WELCOME10", shipping_city="spb"
-        ) is not None
+    assert (
+        validate_order(
+            [{"sku": "1", "qty": "100", "unit_price_kopecks": "-10000"}],
+            promo_code="WELCOME10",
+            shipping_city="spb",
+        )
+        is not None
+    )
 
 
 def test_duplicate_sku_is_rejected() -> None:
     """Spec 3, rule 8: the same article may appear only once."""
-    assert validate_order(
-        [{"sku": "1", "qty": "1", "unit_price_kopecks": "10000"},
-         {"sku": "1", "qty": "3", "unit_price_kopecks": "10000"} ],
-        promo_code="WELCOME10", shipping_city="spb"
-        ) is not None
+    assert (
+        validate_order(
+            [
+                {"sku": "1", "qty": "1", "unit_price_kopecks": "10000"},
+                {"sku": "1", "qty": "3", "unit_price_kopecks": "10000"},
+            ],
+            promo_code="WELCOME10",
+            shipping_city="spb",
+        )
+        is not None
+    )
 
 
 def test_unknown_promo_code_is_rejected() -> None:
     """Spec 3, rule 9: only codes from PROMO_CODES exist."""
-    assert validate_order(
-        list({"sku": "1", "qty": "100", "unit_price_kopecks": "10000"}),
-        promo_code="ABRACADABRA_PROMOCODE", shipping_city="spb"
-        ) is not None
+    assert (
+        validate_order(
+            [{"sku": "1", "qty": "100", "unit_price_kopecks": "10000"}],
+            promo_code="ABRACADABRA_PROMOCODE",
+            shipping_city="spb",
+        )
+        is not None
+    )
 
 
 def test_unsupported_city_is_rejected() -> None:
     """Spec 3, rule 10: only cities from SUPPORTED_CITIES are served."""
-    assert validate_order(
-        list({"sku": "1", "qty": "10", "unit_price_kopecks": "10000"}),
-        promo_code="WELCOME10", shipping_city="nnov"
-        ) is not None
+    assert (
+        validate_order(
+            [{"sku": "1", "qty": "10", "unit_price_kopecks": "10000"}],
+            promo_code="WELCOME10",
+            shipping_city="nnov",
+        )
+        is not None
+    )
 
 
 def test_valid_order_passes_validation() -> None:
     """Spec 3: a good order gets None back instead of a reason."""
-    assert validate_order(
-        list({"sku": "1", "qty": "10", "unit_price_kopecks": "10000"}),
-        promo_code="WELCOME10", shipping_city="spb"
-        ) is None
+    assert (
+        validate_order(
+            [{"sku": "1", "qty": "10", "unit_price_kopecks": "10000"}],
+            promo_code="WELCOME10",
+            shipping_city="spb",
+        )
+        is None
+    )
 
 
 def test_no_discount_below_first_tier() -> None:
