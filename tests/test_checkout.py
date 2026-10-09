@@ -60,7 +60,10 @@ def test_non_numeric_quantity_is_rejected() -> None:
 
 def test_zero_quantity_is_rejected() -> None:
     """Spec 3, rule 5: `qty` must be greater than zero."""
-    ...
+    assert validate_order(
+        list({"sku": "1", "qty": "-10", "unit_price_kopecks": "10000"}),
+        promo_code="WELCOME10", shipping_city="spb"
+        ) is not None
 
 
 def test_non_numeric_price_is_rejected() -> None:
