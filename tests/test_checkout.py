@@ -76,7 +76,10 @@ def test_non_numeric_price_is_rejected() -> None:
 
 def test_negative_price_is_rejected() -> None:
     """Spec 3, rule 7: a price may not be negative."""
-    ...
+    assert validate_order(
+        list({"sku": "1", "qty": "-100", "unit_price_kopecks": "10000"}),
+        promo_code="WELCOME10", shipping_city="spb"
+        ) is not None
 
 
 def test_duplicate_sku_is_rejected() -> None:
